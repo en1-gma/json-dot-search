@@ -1,65 +1,56 @@
-# json-dot-search README
+# JSON Dot Search VSCode Extension
 
-This is the README for your extension "json-dot-search". After writing up a brief description, we recommend including the following sections.
+## Description
+
+JSON Dot Search is a Visual Studio Code extension designed to enhance your JSON file editing experience. With its main feature, you can seamlessly search inside a JSON file using a dot notation string. Additionally, it offers a convenient secondary feature allowing you to copy the path, also in dot notation, of the current line of JSON.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Dot Notation Search**: Effortlessly search inside JSON files using dot notation strings. This feature enables quick and precise navigation through JSON structures, improving your productivity.
+- **Path Copying**: Easily copy the path, represented in dot notation, of the current line of JSON. This functionality streamlines your workflow when working with complex JSON files.
 
-For example if there is an image subfolder under your extension project workspace:
+## Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+You can install the extension by searching for "JSON Dot Search" in the Extensions view of Visual Studio Code or by visiting the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=VincenzoChiavetta.json-dot-search).
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Usage
+
+### Dot Notation Search
+
+1. Open a JSON file in Visual Studio Code.
+2. Press `Ctrl + F` to open the search bar.
+3. Enter your dot notation string and hit Enter.
+4. The extension will navigate to the corresponding JSON element.
+
+### Path Copying
+
+1. Open a JSON file in Visual Studio Code.
+2. Place your cursor on the line containing the JSON element whose path you want to copy.
+3. Press `Alt + Shift + C` to copy the path in dot notation to your clipboard.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Visual Studio Code version 1.87.0 or higher.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- No additional settings are required for this extension.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- There are no known issues at the moment. If you encounter any problems, please report them on the extension's [GitHub repository](https://github.com/VincenzoChiavetta/json-dot-search).
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+- Initial release of JSON Dot Search extension.
 
-Initial release of ...
+## License
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+This extension is licensed under the [MIT License](LICENSE.md).
 
 ---
 
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Publisher:** Vincenzo Chiavetta  
+**GitHub Repository:** [VincenzoChiavetta/json-dot-search](https://github.com/VincenzoChiavetta/json-dot-search)
