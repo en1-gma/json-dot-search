@@ -4,6 +4,10 @@
   "description": "",
   "version": "0.0.1",
   "publisher": "VincenzoChiavetta",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/en1-gma/json-dot-search"
+  },
   "engines": {
     "vscode": "^1.87.0"
   },
