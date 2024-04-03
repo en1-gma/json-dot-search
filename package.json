@@ -3,6 +3,7 @@
   "displayName": "json-dot-search",
   "description": "",
   "version": "0.0.1",
+  "publisher": "en1gm4",
   "engines": {
     "vscode": "^1.87.0"
   },
