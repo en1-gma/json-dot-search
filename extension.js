@@ -1,48 +1,94 @@
 const vscode = require('vscode');
-const { getLineNumber } = require('./utils');
+const { getLineNumber, parse, getAboveDelta, jsonSanifier } = require('./utils');
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+  const { activeTextEditor, showErrorMessage } = vscode.window;
+  const { document, selection } = activeTextEditor;
+  const { fileName, getText, lineAt, offsetAt } = document;
 
-  let disposable = vscode.commands.registerCommand('json-dot-search.search', async function () {
+  // Global scope variable
+  var activeSelection = selection.active.line;
 
-    const jsonSearch = await vscode.window.showInputBox({
-      placeHolder: 'Enter a JSON path to search for',
-    });
+  vscode.window.onDidChangeTextEditorSelection((event) => activeSelection = event.textEditor.selection.active.line);
 
-    if (jsonSearch) {
-      const { activeTextEditor, showErrorMessage, } = vscode.window;
-      const { document } = activeTextEditor || {};
-      const { fileName, getText, } = document || {};
+  const commands = [
+    vscode.commands.registerCommand('json-dot-search.search', async () => {
 
-      if (fileName.includes('.json')) {
-        const text = getText();
-        const json = JSON.parse(text);
+      const jsonSearch = await vscode.window.showInputBox({ placeHolder: 'Enter a JSON path to search for' });
 
-        const [firstElement, ...path] = jsonSearch.split('.') || [jsonSearch];
+      if (jsonSearch) {
 
-        let rowNum = getLineNumber(text, firstElement, true);
+        if (fileName.includes('.json')) {
+          const text = getText();
+          const json = JSON.parse(text);
 
-        let res = json[firstElement];
+          const notFoundEls = [];
 
-        for (let i = 0; i < path.length; i++) {
-          const el = res[path[i]];
+          const [firstElement, ...path] = jsonSearch.split('.') || [jsonSearch];
 
-          if (el) {
-            rowNum += getLineNumber(JSON.stringify(res, null, " "), path[i], i < path.length - 1);
-            res = el;
+          const searched = [firstElement];
+
+          const keys = Object.keys(json);
+
+          let res = json[firstElement];
+
+          const aboveDelta = getAboveDelta(json, keys, keys.indexOf(firstElement));
+
+          let rowNum = parse(aboveDelta).split('\n').length - 1;
+
+          for (let i = 0; i < path.length; i++) {
+
+            const toSearch = path[i];
+            const el = res[toSearch];
+
+            if (el) {
+
+              rowNum += getLineNumber(parse(res), toSearch, i < path.length - 1);
+              res = el;
+              searched.push(toSearch);
+            } else notFoundEls.push(toSearch);
           }
-        }
 
-        activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, document.lineAt(rowNum).text.length);
+          if (notFoundEls.length) showErrorMessage(`${notFoundEls.join('.')} not found inside ${searched.join('.')}`);
 
-      } else showErrorMessage('No active .json file found.');
-    }
-  });
+          activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, lineAt(rowNum).text.length);
+        } else showErrorMessage('No active .json file found.');
+      }
+    }),
+    vscode.commands.registerCommand('json-dot-search.copyDotPath', () => {
 
-  context.subscriptions.push(disposable);
+      const text = getText();
+      const aboveDelta = text.substring(0, offsetAt(new vscode.Position(activeSelection, activeSelection)));
+
+      const safeJson = jsonSanifier(aboveDelta);
+
+      const keys = Object.keys(safeJson);
+
+      const firstPath = keys[keys.length - 1];
+
+      let el = safeJson[firstPath];
+
+      const path = [firstPath];
+
+      while (typeof el === 'object') {
+
+        const innerKeys = Object.keys(el);
+
+        const indexPath = innerKeys[innerKeys.length - 1];
+
+        path.push(indexPath);
+
+        el = el[indexPath];
+      }
+
+      vscode.env.clipboard.writeText(path.join('.'));
+    }),
+  ];
+
+  context.subscriptions.push(...commands);
 }
 
 // This method is called when your extension is deactivated

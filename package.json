@@ -12,10 +12,45 @@
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == json",
+          "command": "json-dot-search.search",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "resourceLangId == json",
+          "command": "json-dot-search.copyDotPath",
+          "group": "9_cutcopypaste"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "json-dot-search.search",
-        "title": "JSD: Search"
+        "title": "JSD: Search",
+        "when": "editorLangId == json",
+        "icon": "$(search-fuzzy)"
+      },
+      {
+        "command": "json-dot-search.copyDotPath",
+        "title": "Copy dot path",
+        "icon": "$(clippy)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "json-dot-search.search",
+        "key": "ctrl+f",
+        "mac": "ctrl+f"
+      },
+      {
+        "command": "json-dot-search.copyDotPath",
+        "key": "alt+shift+c",
+        "mac": "alt+shift+c"
       }
     ]
   },
@@ -25,12 +60,15 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.87.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "eslint": "^8.57.0",
-    "typescript": "^5.3.3",
+    "@types/vscode": "^1.87.0",
     "@vscode/test-cli": "^0.0.8",
-    "@vscode/test-electron": "^2.3.9"
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.57.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@vscode/codicons": "^0.0.35"
   }
 }
