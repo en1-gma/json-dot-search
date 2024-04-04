@@ -38,7 +38,7 @@ You can install the extension by searching for "JSON Dot Search" in the Extensio
 
 ## Known Issues
 
-- There are no known issues at the moment. If you encounter any problems, please report them on the extension's [GitHub repository](https://github.com/VincenzoChiavetta/json-dot-search).
+- There are no known issues at the moment. If you encounter any problems, please report them on the extension's [GitHub repository](https://github.com/en1-gma/json-dot-search).
 
 ## Release Notes
 
@@ -53,4 +53,4 @@ This extension is licensed under the [MIT License](LICENSE.md).
 ---
 
 **Publisher:** Vincenzo Chiavetta  
-**GitHub Repository:** [VincenzoChiavetta/json-dot-search](https://github.com/VincenzoChiavetta/json-dot-search)
+**GitHub Repository:** [VincenzoChiavetta/json-dot-search](https://github.com/en1-gma/json-dot-search)

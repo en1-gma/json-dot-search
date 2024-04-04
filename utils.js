@@ -49,4 +49,20 @@ module.exports = {
   },
   getTrimmed: (lineAtObj) => lineAtObj.text.trim(),
   jsonSanifier,
+  getLastJson: (firstPath, json) => {
+    const path = [firstPath];
+    let el = json[firstPath];
+    while (typeof el === 'object') {
+
+      const innerKeys = Object.keys(el);
+
+      const indexPath = innerKeys[innerKeys.length - 1];
+
+      path.push(indexPath);
+
+      el = el[indexPath];
+    }
+
+    return path;
+  }
 }

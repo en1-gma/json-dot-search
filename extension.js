@@ -1,11 +1,11 @@
 const vscode = require('vscode');
-const { getLineNumber, parse, getAboveDelta, jsonSanifier } = require('./utils');
+const { getLineNumber, parse, getAboveDelta, jsonSanifier, getLastJson } = require('./utils');
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  const { activeTextEditor, showErrorMessage } = vscode.window;
+  const { activeTextEditor, showErrorMessage, showInformationMessage } = vscode.window;
   const { document, selection } = activeTextEditor;
   const { fileName, getText, lineAt, offsetAt } = document;
 
@@ -17,11 +17,12 @@ function activate(context) {
   const commands = [
     vscode.commands.registerCommand('json-dot-search.search', async () => {
 
-      const jsonSearch = await vscode.window.showInputBox({ placeHolder: 'Enter a JSON path to search for' });
+      if (fileName.includes('.json')) {
 
-      if (jsonSearch) {
+        const jsonSearch = await vscode.window.showInputBox({ placeHolder: 'Enter a JSON path to search for' });
 
-        if (fileName.includes('.json')) {
+        if (jsonSearch) {
+
           const text = getText();
           const json = JSON.parse(text);
 
@@ -55,12 +56,13 @@ function activate(context) {
           if (notFoundEls.length) showErrorMessage(`${notFoundEls.join('.')} not found inside ${searched.join('.')}`);
 
           activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, lineAt(rowNum).text.length);
-        } else showErrorMessage('No active .json file found.');
-      }
+        }
+      } else showErrorMessage('No active .json file found.');
     }),
-    vscode.commands.registerCommand('json-dot-search.copyDotPath', () => {
+    vscode.commands.registerCommand('json-dot-search.copyDotPath', async () => {
 
       const text = getText();
+
       const aboveDelta = text.substring(0, offsetAt(new vscode.Position(activeSelection, activeSelection)));
 
       const safeJson = jsonSanifier(aboveDelta);
@@ -69,22 +71,11 @@ function activate(context) {
 
       const firstPath = keys[keys.length - 1];
 
-      let el = safeJson[firstPath];
+      const path = getLastJson(firstPath, safeJson);
 
-      const path = [firstPath];
+      await vscode.env.clipboard.writeText(path.join('.'));
 
-      while (typeof el === 'object') {
-
-        const innerKeys = Object.keys(el);
-
-        const indexPath = innerKeys[innerKeys.length - 1];
-
-        path.push(indexPath);
-
-        el = el[indexPath];
-      }
-
-      vscode.env.clipboard.writeText(path.join('.'));
+      showInformationMessage('Path successfully copied to clipboard!');
     }),
   ];
 
