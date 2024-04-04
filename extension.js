@@ -1,11 +1,23 @@
 const vscode = require('vscode');
-const { getLineNumber, parse, getAboveDelta, jsonSanifier, getLastJson } = require('./utils');
+const {
+  adaptJsonDepth,
+  getAboveDelta,
+  getLastJson,
+  getLineNumber,
+  jsonSanifier,
+  parse,
+} = require('./utils');
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  const { activeTextEditor, showErrorMessage, showInformationMessage } = vscode.window;
+  const {
+    activeTextEditor,
+    showErrorMessage,
+    showInformationMessage,
+    showInputBox,
+  } = vscode.window;
   const { document, selection } = activeTextEditor;
   const { fileName, getText, lineAt, offsetAt } = document;
 
@@ -14,71 +26,73 @@ function activate(context) {
 
   vscode.window.onDidChangeTextEditorSelection((event) => activeSelection = event.textEditor.selection.active.line);
 
+  let timeoutId;
   const commands = [
     vscode.commands.registerCommand('json-dot-search.search', async () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        if (fileName.includes('.json')) {
 
-      if (fileName.includes('.json')) {
+          const jsonSearch = await showInputBox({ placeHolder: 'Enter a JSON path to search for' });
 
-        const jsonSearch = await vscode.window.showInputBox({ placeHolder: 'Enter a JSON path to search for' });
+          if (jsonSearch) {
 
-        if (jsonSearch) {
+            const text = getText();
+            const json = JSON.parse(text);
 
-          const text = getText();
-          const json = JSON.parse(text);
+            const notFoundEls = [];
 
-          const notFoundEls = [];
+            const keys = Object.keys(json);
 
-          const [firstElement, ...path] = jsonSearch.split('.') || [jsonSearch];
+            const [firstElement, ...path] = jsonSearch.split('.') || [jsonSearch];
 
-          const searched = [firstElement];
+            let res = json[firstElement];
 
-          const keys = Object.keys(json);
+            const searched = [firstElement];
 
-          let res = json[firstElement];
+            const aboveDelta = getAboveDelta(json, keys, keys.indexOf(firstElement));
 
-          const aboveDelta = getAboveDelta(json, keys, keys.indexOf(firstElement));
+            let rowNum = parse(aboveDelta).split('\n').length;
+            for (let i = 0; i < path.length; i++) {
 
-          let rowNum = parse(aboveDelta).split('\n').length - 1;
+              const toSearch = path[i];
+              const el = res[toSearch];
 
-          for (let i = 0; i < path.length; i++) {
+              if (el) {
+                rowNum += getLineNumber(parse(res), toSearch, typeof el === 'object');
+                res = el;
+                searched.push(toSearch);
+              } else notFoundEls.push(toSearch);
+            }
 
-            const toSearch = path[i];
-            const el = res[toSearch];
-
-            if (el) {
-
-              rowNum += getLineNumber(parse(res), toSearch, i < path.length - 1);
-              res = el;
-              searched.push(toSearch);
-            } else notFoundEls.push(toSearch);
+            if (notFoundEls.length) showErrorMessage(`${notFoundEls.join('.')} not found inside ${searched.join('.')}`);
+            else activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, lineAt(rowNum).text.length);
           }
+        } else showErrorMessage('No active .json file found.');
+      }, 100);
 
-          if (notFoundEls.length) showErrorMessage(`${notFoundEls.join('.')} not found inside ${searched.join('.')}`);
-
-          activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, lineAt(rowNum).text.length);
-        }
-      } else showErrorMessage('No active .json file found.');
     }),
     vscode.commands.registerCommand('json-dot-search.copyDotPath', async () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        const text = getText();
 
-      const text = getText();
+        const aboveDelta = text.substring(0, offsetAt(new vscode.Position(activeSelection, activeSelection)));
 
-      const aboveDelta = text.substring(0, offsetAt(new vscode.Position(activeSelection, activeSelection)));
+        const safeJson = jsonSanifier(aboveDelta);
 
-      const safeJson = jsonSanifier(aboveDelta);
+        const keys = Object.keys(safeJson);
 
-      const keys = Object.keys(safeJson);
+        const firstPath = keys[keys.length - 1];
 
-      const firstPath = keys[keys.length - 1];
+        const path = getLastJson(firstPath, safeJson).filter(Boolean);
 
-      const path = getLastJson(firstPath, safeJson);
+        await vscode.env.clipboard.writeText(path.join('.'));
 
-      await vscode.env.clipboard.writeText(path.join('.'));
-
-      showInformationMessage('Path successfully copied to clipboard!');
+        showInformationMessage('Path successfully copied to clipboard!');
+      }, 100);
     }),
   ];
-
   context.subscriptions.push(...commands);
 }
 

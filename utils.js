@@ -27,7 +27,6 @@ module.exports = {
       if (line.includes(`\"${search}\": ${isAncestor ? '{' : '\"'}`)) {
 
         toRet = i;
-
         break;
       }
     }
