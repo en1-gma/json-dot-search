@@ -13,7 +13,16 @@
     "vscode": "^1.87.0"
   },
   "categories": [
-    "Other"
+    "Extension Packs"
+  ],
+  "keywords": [
+    "commands",
+    "dot",
+    "git",
+    "github",
+    "json",
+    "path",
+    "search"
   ],
   "activationEvents": [],
   "main": "./extension.js",
