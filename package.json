@@ -2,7 +2,7 @@
   "name": "json-dot-search",
   "displayName": "Json dot search",
   "description": "Seamlessly search inside a JSON file using a dot notation string",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "icon": "assets/image.png",
   "publisher": "VincenzoChiavetta",
   "repository": {
