@@ -1,6 +1,5 @@
 const vscode = require('vscode');
 const {
-  adaptJsonDepth,
   getAboveDelta,
   getLastJson,
   getLineNumber,
@@ -77,10 +76,9 @@ function activate(context) {
       timeoutId = setTimeout(async () => {
         const text = getText();
 
-        const aboveDelta = text.substring(0, offsetAt(new vscode.Position(activeSelection, activeSelection)));
+        const aboveDelta = text.substring(0, offsetAt(new vscode.Position(activeSelection + 1, 0)));
 
-        const safeJson = jsonSanifier(aboveDelta);
-
+        const safeJson = jsonSanifier(aboveDelta.trim());
         const keys = Object.keys(safeJson);
 
         const firstPath = keys[keys.length - 1];

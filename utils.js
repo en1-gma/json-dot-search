@@ -46,7 +46,6 @@ module.exports = {
 
     return toRet;
   },
-  getTrimmed: (lineAtObj) => lineAtObj.text.trim(),
   jsonSanifier,
   getLastJson: (firstPath, json) => {
     const path = [firstPath];
