@@ -15,6 +15,8 @@ You can install the extension by searching for "JSON Dot Search" in the Extensio
 
 ## Usage
 
+![](/assets/usage.gif)
+
 ### Dot Notation Search
 
 1. Open a JSON file in Visual Studio Code.
