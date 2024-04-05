@@ -24,8 +24,7 @@ module.exports = {
 
       const line = splittedSectorText[i];
 
-      if (line.includes(`\"${search}\": ${isAncestor ? '{' : '\"'}`)) {
-
+      if (line.includes(`\"${search}\":${isAncestor ? ' {' : ''}`)) {
         toRet = i;
         break;
       }
@@ -39,7 +38,6 @@ module.exports = {
     const toRet = {};
 
     for (let i = 0; i < firstSectorIndex; i++) {
-
       const index = keys[i];
       toRet[index] = json[index];
     }
