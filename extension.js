@@ -28,7 +28,7 @@ function activate(context) {
           showInputBox,
         } = vscode.window;
 
-        const { fileName, getText, lineAt } = activeTextEditor.document;
+        const { fileName, getText, lineAt, showTextDocumentRange } = activeTextEditor.document;
 
         if (fileName.includes('.json')) {
 
@@ -66,9 +66,19 @@ function activate(context) {
                   searched.push(toSearch);
                 } else notFoundEls.push(toSearch);
               }
-              console.log('rowNum', rowNum)
+
               if (notFoundEls.length) showErrorMessage(`${notFoundEls.join('.')} not found inside ${searched.join('.')}`);
-              else activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, lineAt(rowNum).text.length);
+              else {
+                const selectionLength = lineAt(rowNum).text.length;
+                activeTextEditor.selection = new vscode.Selection(rowNum, 0, rowNum, selectionLength);
+                activeTextEditor.revealRange(
+                  new vscode.Range(
+                    new vscode.Position(rowNum, 0),
+                    new vscode.Position(rowNum, selectionLength)
+                  ),
+                  vscode.TextEditorRevealType.InCenterIfOutsideViewport
+                );
+              }
             } else showErrorMessage(`${firstElement} not found inside the file.`);
           }
         } else showErrorMessage('No active .json file found.');
