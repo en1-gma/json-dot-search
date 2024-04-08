@@ -20,6 +20,7 @@ function activate(context) {
   let timeoutId;
   const commands = [
     vscode.commands.registerCommand('json-dot-search.search', async () => {
+
       clearTimeout(timeoutId);
       timeoutId = setTimeout(async () => {
         const {
@@ -28,7 +29,7 @@ function activate(context) {
           showInputBox,
         } = vscode.window;
 
-        const { fileName, getText, lineAt, showTextDocumentRange } = activeTextEditor.document;
+        const { fileName, getText, lineAt } = activeTextEditor.document;
 
         if (fileName.includes('.json')) {
 
@@ -83,7 +84,6 @@ function activate(context) {
           }
         } else showErrorMessage('No active .json file found.');
       }, 100);
-
     }),
     vscode.commands.registerCommand('json-dot-search.copyDotPath', async () => {
 
